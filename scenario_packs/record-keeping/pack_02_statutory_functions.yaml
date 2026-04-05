@@ -1,0 +1,53 @@
+---
+pack_id: RKS-PACK-02
+standard_id: RKS
+description: Statutory function records — QDC/QSC reports, referrals, DRA compliance
+
+scenarios:
+  - id: SC-004
+    clause_id: RKS-5.1
+    description: Standard report for a qualifying contract still in progress
+    context: >
+      The SSRO receives a quarterly report relating to a qualifying defence
+      contract (QDC) that has 3 years remaining until its contract completion
+      date. The report contains cost and pricing data.
+    expected_outcome: Retain — contract is active, mandatory to keep
+    expected_actions:
+      - Store report in statutory functions SharePoint folder
+      - Retain for duration of qualifying contract plus any subsequent referral period
+    rationale: >
+      RKS-5.2 requires reports to be kept for the duration of the qualifying
+      contract and any subsequent period during which the SSRO might receive
+      a referral. The contract is still active.
+
+  - id: SC-005
+    clause_id: RKS-5.1
+    description: Referral evidence 4 months after final decision
+    context: >
+      A referral decision was issued and received by the parties 4 months
+      ago. The referral working papers and contractor-provided evidence
+      are stored in the referral case folder.
+    expected_outcome: Retain — within the 1-year retention window
+    expected_actions:
+      - Retain until 1 year after the trigger point (3 months post final decision receipt)
+      - Schedule review — consider extension only as exceptional
+    rationale: >
+      RKS-A.3 specifies referral evidence has a short retention period of
+      1 year, triggered 3 months after receipt of the final decision.
+      4 months post-decision means the trigger has fired but the year has not elapsed.
+
+  - id: SC-006
+    clause_id: RKS-A.3
+    description: Referral decision record — permanent retention
+    context: >
+      A referral decision document from 15 years ago. The case is fully
+      closed, no appeals outstanding. The document is a formal SSRO
+      determination on a pricing dispute.
+    expected_outcome: Retain permanently — referral decisions are permanent records
+    expected_actions:
+      - Delete or redact non-essential information
+      - Retain the core referral decision permanently
+    rationale: >
+      RKS-A.3 classifies referral decisions as permanent retention records
+      because the SSRO requires them to fulfil statutory functions and
+      provide an historic record of the regime.

@@ -1,0 +1,68 @@
+---
+pack_id: RKS-PACK-03
+standard_id: RKS
+description: HR and Finance record retention — employment, payroll, pensions, tax
+
+scenarios:
+  - id: SC-007
+    clause_id: RKS-A.7
+    description: Employee personnel file 5 years after leaving
+    context: >
+      A former employee left the SSRO 5 years ago. Their personnel file
+      contains their employment contract, role movements, performance
+      reports, and sickness records. No ongoing disputes.
+    expected_outcome: Retain — within medium-term (7 year) retention from cessation
+    expected_actions:
+      - Retain for a further 2 years from cessation of employment
+      - Schedule review at 7-year mark
+    rationale: >
+      RKS-A.7 specifies individual employment records (personnel) have
+      a medium retention period of 7 years from date of cessation.
+      5 years is within period.
+
+  - id: SC-008
+    clause_id: RKS-A.7
+    description: Sensitive personal data 7 months after employee departure
+    context: >
+      An employee left 7 months ago. Their file still contains next of
+      kin details, bank details, and sensitive personal data (excluding
+      sickness records which are in the main personnel file).
+    expected_outcome: Delete — exceeds 6-month retention for sensitive personal data
+    expected_actions:
+      - Destroy/delete next of kin details, bank details, and sensitive personal data
+      - Retain non-sensitive elements of the personnel file under the 7-year rule
+    rationale: >
+      RKS-A.7 specifies sensitive personal data (excluding sickness records)
+      has a short retention of 6 months from cessation of employment.
+      7 months exceeds this threshold.
+
+  - id: SC-009
+    clause_id: RKS-A.7
+    description: Pension records for a 55-year-old retiree
+    context: >
+      A former employee retired at age 55 and is now 62. Their pension
+      records include pension estimate, pensionable pay at leaving,
+      reckonable service, and AVC details.
+    expected_outcome: Retain — pension records kept until the employee reaches 100
+    expected_actions:
+      - Retain pension records for another 38 years
+      - Schedule periodic review but expect long-term retention
+    rationale: >
+      RKS-A.7 specifies individual pension records are retained until
+      the employee reaches the age of 100. At 62, this is well within period.
+
+  - id: SC-010
+    clause_id: RKS-A.8
+    description: Financial transaction records from 8 years ago
+    context: >
+      Payment records and bank statements from the 2016-17 financial year.
+      The current year is 2024-25. These are standard accounting transactions
+      with no ongoing audit or dispute.
+    expected_outcome: Delete — exceeds 7-year retention for financial records
+    expected_actions:
+      - Destroy/delete the financial transaction records
+      - Confirm no outstanding HMRC queries before deletion
+    rationale: >
+      RKS-A.8 specifies financial accounting and transaction records have
+      a medium retention of 7 years from end of relevant financial year.
+      2016-17 + 7 years = 2023-24, so the retention period has elapsed.

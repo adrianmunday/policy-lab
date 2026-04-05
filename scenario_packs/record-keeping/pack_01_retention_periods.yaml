@@ -1,0 +1,51 @@
+---
+pack_id: RKS-PACK-01
+standard_id: RKS
+description: Retention period tier classification and trigger point scenarios
+
+scenarios:
+  - id: SC-001
+    clause_id: RKS-3.3
+    description: Administrative email not saved to SharePoint
+    context: >
+      A staff member has a routine email in their inbox about an internal
+      meeting agenda from 14 months ago. It was never saved to SharePoint
+      and does not relate to any statutory function.
+    expected_outcome: Delete — exceeds short-term (1 year) retention for general working papers
+    expected_actions:
+      - Apply default short retention period (1 year from last access)
+      - Delete the email
+    rationale: >
+      Under RKS-5.7, unsaved emails default to the short retention period
+      of 1 year from last access. 14 months exceeds this.
+
+  - id: SC-002
+    clause_id: RKS-3.3
+    description: Operational contract record at 5 years
+    context: >
+      A service contract signed in standard form (not as a deed) expired
+      5 years ago. The file is in SharePoint under Commercial records.
+      No litigation is pending.
+    expected_outcome: Retain — within medium-term (7 year) retention period
+    expected_actions:
+      - Retain for a further 2 years
+      - Schedule review at 7-year mark
+    rationale: >
+      Service contracts signed as a contract have a medium retention
+      period of 7 years from expiry (RKS-A.6). 5 years is within period.
+
+  - id: SC-003
+    clause_id: RKS-3.5
+    description: Record subject to live litigation hold
+    context: >
+      A set of Board committee papers from 11 years ago (past the 10-year
+      retention period) are the subject of a Freedom of Information request
+      that is currently being appealed.
+    expected_outcome: Retain — litigation/FOI hold overrides expiry
+    expected_actions:
+      - Delay destruction until FOI complaint procedure is exhausted
+      - Create new trigger point and retention period after resolution
+    rationale: >
+      RKS-3.5 explicitly requires retention to be delayed when a record
+      is subject to a live request under FOIA 2000, regardless of whether
+      the standard retention period has passed.

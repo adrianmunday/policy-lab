@@ -1,0 +1,78 @@
+---
+pack_id: RKS-PACK-04
+standard_id: RKS
+description: Policy scope, personal data retention, and edge cases
+
+scenarios:
+  - id: SC-011
+    clause_id: RKS-4.2
+    description: Business email with Rights Management preventing SharePoint save
+    context: >
+      A staff member receives an email with Rights Management applied
+      that contains key information about a statutory report submission.
+      The email cannot be saved directly to SharePoint due to the
+      Rights Management restriction.
+    expected_outcome: Create a PDF copy and save to SharePoint
+    expected_actions:
+      - Create a PDF (or similar format) copy of the email
+      - Save the PDF to the relevant SharePoint folder
+      - Treat the saved copy as the official record
+    rationale: >
+      RKS-4.2 explicitly addresses this scenario: when Rights Management
+      prevents direct saving, a PDF or similar format copy should be created.
+
+  - id: SC-012
+    clause_id: RKS-5.8
+    description: Personal data retention beyond original purpose
+    context: >
+      The SSRO holds personal contact details for stakeholders who
+      participated in a consultation that concluded 3 years ago. The
+      consultation report has been published. There is no ongoing
+      business need for the personal data, but no explicit retention
+      period was set for consultation participant data.
+    expected_outcome: Delete — personal data kept beyond its original purpose
+    expected_actions:
+      - Review whether the personal data is still necessary for the purpose it was processed
+      - If no ongoing purpose, delete the personal data
+      - Seek legal advice if uncertain about lawful basis for extended retention
+    rationale: >
+      RKS-5.8 states personal data may only be kept in identifiable form
+      for as long as necessary for its original processing purpose. With
+      the consultation concluded and report published, the original purpose
+      is fulfilled.
+
+  - id: SC-013
+    clause_id: RKS-2.1
+    description: Draft document with decision-making evidence
+    context: >
+      A draft Board paper (never finalised) contains margin notes and
+      tracked changes showing the evolution of a policy decision. The
+      final version is stored separately. The draft is 2 years old.
+    expected_outcome: Retain — draft contains evidence of decision-making
+    expected_actions:
+      - Assess whether the draft contains evidence of decision-making
+      - If yes, retain alongside the final version
+      - Apply the retention period of the relevant record type (Board papers = 10 years)
+    rationale: >
+      RKS-3.6 states the SSRO generally only needs the final version,
+      but draft documents may need to be kept if they contain evidence
+      of decision-making. Board papers fall under the 10-year governance
+      retention period (RKS-A.4).
+
+  - id: SC-014
+    clause_id: RKS-4.3
+    description: Business records stored on personal drive
+    context: >
+      During a system audit, business-related spreadsheets are discovered
+      on a staff member's personal drive (H: drive). The spreadsheets
+      contain analysis supporting a statutory referral that is currently
+      in progress.
+    expected_outcome: Transfer to SharePoint — personal drives are not official record-keeping
+    expected_actions:
+      - Transfer the business-related records to the relevant SharePoint folder
+      - Ensure the records are properly classified under the statutory functions category
+      - Remind the staff member of the Acceptable Use Policy
+    rationale: >
+      RKS-4.3 states personal drives are not recognised as part of the
+      SSRO's official record keeping system. Business-related records must
+      be saved within the relevant SharePoint folder.
