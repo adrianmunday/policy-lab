@@ -6,10 +6,18 @@ This is an agentic framework for autonomously improving policy documents. Instea
 
 You read this file first. It tells you the overall flow. When you need to score, rewrite, test parity, or assess coverage, you read the relevant agent behaviour file from `agents/` and follow its instructions. The agent files contain the rubrics, worked examples, and output formats that replace the old `evaluate.py`.
 
+## Relationship to the structural loop
+
+This file orchestrates the **inner loop** — clause-level quality improvement within individual standards. The **outer loop** is orchestrated by `programme-structural.md` and handles cross-standard structural analysis (coherence, deduplication, simplification).
+
+The outer loop may seed this inner loop with clauses that need re-scoring after structural changes. These appear in `inner-loop-queue.md` and take priority in pass selection (see Selection logic below).
+
+Typically the outer loop runs first, then the inner loop runs to polish the affected clauses.
+
 ## File map
 
 ```
-policylab-v2/
+policylab-v3/
 ├── programme.md                  ← You are here. The orchestrator.
 ├── constraints.md                ← Immutable guardrails. Read this before every run.
 ├── standards/                    ← Policy documents you improve.
@@ -29,7 +37,16 @@ policylab-v2/
 │       ├── PLAN.md
 │       ├── RUN_SUMMARY.md
 │       └── results.tsv
-└── blog.md                       ← Chronological progress narrative
+├── blog.md                       ← Chronological progress narrative
+├── programme-structural.md       ← Outer loop orchestrator (structural runs)
+├── constraints-structural.md     ← Outer loop guardrails
+├── structural-runs/              ← One subfolder per structural run
+│   └── srun-NNN/
+│       ├── graph.yaml
+│       ├── BACKLOG.md
+│       ├── STRUCTURAL_SUMMARY.md
+│       └── results.tsv
+├── inner-loop-queue.md           ← Clauses seeded by outer loop for re-scoring
 ```
 
 ## Setup (first time only)
@@ -59,9 +76,10 @@ At the start of each run, select 5 (clause, dimension) pairs. Log the plan to `r
 
 ### Selection logic (priority order)
 
-1. **Coverage gaps** — clauses nearest to unaddressed or partially addressed in-scope regulatory obligations. Pair with whichever dimension is weakest for that clause.
-2. **Weakest scores** — clauses with the lowest composite score, paired with their weakest dimension.
-3. **Lessons from previous runs** — avoid repeating failed (clause, dimension) combinations from prior runs unless the approach is materially different. Check `runs/run-*/results.tsv` for discard history.
+1. **Structural queue** — if `inner-loop-queue.md` exists and contains unprocessed clauses, these take priority. Each queued clause gets one pass targeting its weakest dimension. Mark clauses as processed in the queue file after scoring.
+2. **Coverage gaps** — clauses nearest to unaddressed or partially addressed in-scope regulatory obligations. Pair with whichever dimension is weakest for that clause.
+3. **Weakest scores** — clauses with the lowest composite score, paired with their weakest dimension.
+4. **Lessons from previous runs** — avoid repeating failed (clause, dimension) combinations from prior runs unless the approach is materially different. Check `runs/run-*/results.tsv` for discard history.
 
 ### Plan format
 
