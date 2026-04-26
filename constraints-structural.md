@@ -1,8 +1,16 @@
-# Policy Lab v3 — Structural Constraints
+# Policy Lab v4 - Structural Constraints
 
 This document defines the immutable guardrails for the outer (structural) loop. All structural agent behaviour files reference this document. Violations of these constraints invalidate a structural change.
 
-## What the outer loop CAN do (after human approval of the backlog)
+## What the outer loop CAN do
+
+Planning actions that do not edit policy text:
+
+- **Create or update the policy architecture strategy** in `policy-architecture-strategy.md`.
+- **Create or update the structural backlog** in `structural-backlog.md`.
+- **Create or update the rewrite-wave queue** in `rewrite-wave-queue.md`.
+
+Approved structural-edit actions:
 
 - **Add cross-references** between clauses in different standards to link related obligations.
 - **Merge clauses** within or across standards where they implement the same obligations. The merged clause must demonstrably satisfy all source obligations from all originating regulatory sources.
@@ -10,7 +18,7 @@ This document defines the immutable guardrails for the outer (structural) loop. 
 - **Move a clause** from one standard to another, leaving a cross-reference at the original location that directs the reader to the new authoritative location.
 - **Simplify clause text** during merges by removing duplicated language, provided the obligation preservation score remains >= 1.0 for every affected obligation.
 - **Create new sections** within an existing standard to house merged content from multiple sources.
-- **Seed the inner loop queue** with clauses that need re-scoring after structural changes.
+- **Seed the rewrite-wave queue** with topics or clauses that need verification and polish after structural changes.
 
 ## What the outer loop CANNOT do
 

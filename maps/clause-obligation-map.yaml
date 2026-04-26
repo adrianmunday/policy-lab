@@ -1,0 +1,138 @@
+version: 1
+last_initialised: "2026-04-25"
+
+clauses:
+  RKS-1.2:
+    topics:
+      - personal_data_retention
+    obligations:
+      - OBL-UKGDPR-STORAGE-LIMITATION
+    coverage: partial
+    notes: "Introduces DPA/UK GDPR basis; operative rule is in RKS-5.8."
+
+  RKS-1.3:
+    topics:
+      - personal_data_retention
+    obligations:
+      - OBL-UKGDPR-STORAGE-LIMITATION
+    coverage: partial
+    notes: "Names SIRO and DPO accountabilities."
+
+  RKS-3.2:
+    topics:
+      - retention_tiers_and_triggers
+    obligations:
+      - OBL-PUBLIC-RECORDS-TRANSFER
+    coverage: partial
+    notes: "Defines expiry actions including transfer to The National Archives."
+
+  RKS-3.3:
+    topics:
+      - retention_tiers_and_triggers
+    obligations: []
+    coverage: policy_control
+    notes: "Three-tier policy structure used by several scenarios."
+
+  RKS-3.5:
+    topics:
+      - retention_tiers_and_triggers
+    obligations:
+      - OBL-FOIA-HOLD
+      - OBL-PUBLIC-RECORDS-TRANSFER
+    coverage: full
+    notes: "Defines exceptions to destruction after retention expiry."
+
+  RKS-3.6:
+    topics:
+      - draft_and_evidence_records
+    obligations: []
+    coverage: policy_control
+    notes: "Evidence-of-decision-making exception for drafts."
+
+  RKS-4.2:
+    topics:
+      - official_record_location
+    obligations: []
+    coverage: policy_control
+    notes: "Email capture, SharePoint filing, Rights Management workaround."
+
+  RKS-4.3:
+    topics:
+      - official_record_location
+    obligations: []
+    coverage: policy_control
+    notes: "Personal drives are not recognised as official record-keeping systems."
+
+  RKS-5.1:
+    topics:
+      - statutory_function_records
+    obligations:
+      - OBL-DRA-QDC-QSC-REGISTER
+    coverage: full
+    notes: "Sets DRA/SSCR obligations for standard reports, QDC/QSC register, and referrals."
+
+  RKS-5.2:
+    topics:
+      - statutory_function_records
+    obligations:
+      - OBL-SSCR-CONTRACTOR-RECORDS
+    coverage: full
+    notes: "Contains complex minimum retention formula; high-risk for simplification."
+
+  RKS-5.3:
+    topics:
+      - hr_and_finance_records
+    obligations:
+      - OBL-CIPD-HR-GUIDANCE
+    coverage: partial
+    notes: "Describes HR source basis; detailed periods are in RKS-A.7."
+
+  RKS-5.4:
+    topics:
+      - hr_and_finance_records
+    obligations:
+      - OBL-HMRC-FINANCE-RECORDS
+    coverage: full
+    notes: "Names Head of Finance, quarterly reconciliation, and asset register."
+
+  RKS-5.7:
+    topics:
+      - retention_tiers_and_triggers
+      - official_record_location
+    obligations: []
+    coverage: policy_control
+    notes: "Default one-year retention for unspecified records and unsaved emails."
+
+  RKS-5.8:
+    topics:
+      - personal_data_retention
+    obligations:
+      - OBL-UKGDPR-STORAGE-LIMITATION
+    coverage: full
+    notes: "Operative personal-data retention rule and DPO annual review."
+
+  RKS-A.3:
+    topics:
+      - statutory_function_records
+    obligations:
+      - OBL-PUBLIC-RECORDS-TRANSFER
+    coverage: partial
+    notes: "Schedule rows for reports, communications, referral decisions, and referral evidence."
+
+  RKS-A.7:
+    topics:
+      - hr_and_finance_records
+      - personal_data_retention
+    obligations:
+      - OBL-CIPD-HR-GUIDANCE
+      - OBL-UKGDPR-STORAGE-LIMITATION
+    coverage: partial
+    notes: "Schedule rows for HR, sensitive personal data, pension, and safety records."
+
+  RKS-A.8:
+    topics:
+      - hr_and_finance_records
+    obligations:
+      - OBL-HMRC-FINANCE-RECORDS
+    coverage: full
+    notes: "Schedule rows for transaction and asset records."

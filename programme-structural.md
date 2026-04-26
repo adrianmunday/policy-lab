@@ -1,213 +1,286 @@
-# Policy Intelligence Lab v3 — Structural Programme
+# Policy Intelligence Lab v4 - Structural Programme
 
-This is the outer loop orchestrator. It manages the structural analysis and consolidation of the policy framework across multiple standards. The inner loop (clause-level quality improvement) is managed by `programme.md`.
+This is the outer-loop programme. It owns the macro policy architecture, the
+structural backlog, and the rewrite-wave queue consumed by `programme.md`.
 
-## How the two loops relate
+The outer loop answers:
+
+1. What should the policy estate become?
+2. What structural work follows from that strategy?
+3. Which rewrite waves should the inner loop execute next?
+
+## Three-tier planning structure
+
+| Tier | File | Owner | Purpose |
+|------|------|-------|---------|
+| 1 | `policy-architecture-strategy.md` | Outer loop / architect | Macro strategy, authority model, consolidation options, human decisions |
+| 2 | `structural-backlog.md` | Outer loop / architect | Ranked structural and capability work derived from the strategy |
+| 3 | `rewrite-wave-queue.md` | Outer loop produces, inner loop consumes | Executable rewrite waves for planner/author/editor/verifier |
+
+The queue is deliberately named `rewrite-wave-queue.md`, not
+`outer-loop-wave-queue.md` or `inner-loop-wave-queue.md`. It is the handoff point:
+the outer loop decides what belongs in it; the inner loop executes one item at a
+time.
+
+## Relationship to the inner loop
 
 ```
-Outer Loop (you are here)
-  │
-  ├── Analyses the FRAMEWORK (all standards together)
-  ├── Produces structural changes (merges, cross-references, contradiction resolutions)
-  ├── Seeds the inner loop with clauses that need re-scoring
-  │
-  └── Inner Loop (programme.md)
-        ├── Analyses individual CLAUSES within a single standard
-        ├── Produces clause-level quality improvements
-        └── Reads the inner loop queue seeded by the outer loop
+Outer loop (this file)
+  - maintain maps
+  - decide policy architecture strategy
+  - create structural backlog
+  - populate rewrite-wave queue
+  - run full structural graph analysis when multiple standards justify it
 
-The outer loop runs first. After structural changes are complete, the inner loop runs to re-score and improve affected clauses.
+Inner loop (`programme.md`)
+  - read rewrite-wave queue
+  - build one compact packet for the next queued item
+  - author a coherent rewrite
+  - editor-review the draft
+  - verify obligations and scenarios
+  - update maps and stop
 ```
 
-## File map
+## Structural roles
 
-```
-policylab-v3/
-├── programme-structural.md       ← You are here. The structural orchestrator.
-├── programme.md                  ← Inner loop orchestrator.
-├── constraints-structural.md     ← Structural guardrails. Read before every structural run.
-├── constraints.md                ← Inner loop guardrails (used by inner loop only).
-├── standards/                    ← Policy documents (shared by both loops).
-├── regulatory_reference/         ← Ground truth obligations (read-only, shared).
-├── scenario_packs/               ← Test scenarios (shared, add-only).
-├── agents/
-│   ├── graph-builder.md          ← Builds the obligation-clause graph
-│   ├── coherence-checker.md      ← Finds contradictions
-│   ├── deduplication-analyser.md ← Finds overlapping clauses
-│   ├── simplification-proposer.md← Proposes merges and consolidations
-│   ├── structural-rewriter.md    ← Executes approved structural changes
-│   └── [inner loop agents]       ← Used by programme.md, not by this file
-├── structural-runs/              ← One subfolder per structural run
-│   └── srun-NNN/
-│       ├── graph.yaml
-│       ├── BACKLOG.md
-│       ├── STRUCTURAL_SUMMARY.md
-│       └── results.tsv
-├── inner-loop-queue.md           ← Clauses seeded for inner loop re-scoring
-└── blog.md                       ← Shared progress narrative
-```
+| Role | File | Purpose |
+|------|------|---------|
+| Policy Architect | `agents/architect.md` | Strategy, backlog, and queue generation |
+| Graph Builder | `agents/graph-builder.md` | Full obligation-clause graph for multi-standard analysis |
+| Coherence Checker | `agents/coherence-checker.md` | Contradiction detection |
+| Deduplication Analyser | `agents/deduplication-analyser.md` | Duplicate obligation analysis |
+| Simplification Proposer | `agents/simplification-proposer.md` | Merge/consolidation proposals |
+| Structural Rewriter | `agents/structural-rewriter.md` | Execute approved structural edits |
 
-## Setup (first time only)
+## Operating modes
 
-1. **Read `constraints-structural.md`** — understand what the outer loop can and cannot do.
-2. **Read all standards** — `standards/*.md`. Understand the scope of the framework.
-3. **Read all regulatory references** — `regulatory_reference/*/`. Understand the obligation landscape.
-4. **Check for prior structural runs** — read `structural-runs/srun-*/STRUCTURAL_SUMMARY.md` to understand history.
-5. **Initialise run tracking** — create `structural-runs/srun-001/` if this is the first run.
-6. **Confirm with the user** — report how many standards are loaded, how many obligations exist, and any notable observations. Await go-ahead.
+| Mode | Use when | Output |
+|------|----------|--------|
+| Defined estate intake | The user provides a bounded population of standards to assess | Updated estate scope in strategy and maps |
+| Strategy | A standard is added, overlap is suspected, or the estate needs an authority model | Updated `policy-architecture-strategy.md` |
+| Backlog | Strategy exists but work has not been ranked | Updated `structural-backlog.md` |
+| Queue | Backlog exists and executable rewrite waves are needed | Updated `rewrite-wave-queue.md` |
+| Map refresh | Maps are missing or stale | Updated `maps/` entries |
+| Structural graph | Multiple standards exist or cross-standard contradictions/duplication are suspected | `structural-runs/srun-NNN/` artifacts |
+| Approved structural edit | Human approved merges, moves, cross-references, or contradiction resolutions | Edited standards plus updated backlog/queue |
 
-## The structural run
+For a newly provided population of standards, the normal mode sequence is:
 
-Execute in this order:
-
-### Phase 1: Build the graph
-
-Read `agents/graph-builder.md` and follow its procedure exactly. Provide it with all standards and regulatory references. The graph builder produces `structural-runs/srun-NNN/graph.yaml`.
-
-### Phase 2: Analyse
-
-Run the three analysers in sequence. Each reads the graph and produces findings.
-
-1. **Coherence** — read `agents/coherence-checker.md`. Check for contradictions.
-2. **Deduplication** — read `agents/deduplication-analyser.md`. Check for overlapping clauses.
-3. **Simplification** — read `agents/simplification-proposer.md`. Check for merge opportunities.
-
-The order matters: coherence findings inform deduplication (don't deduplicate contradictory clauses), and deduplication findings inform simplification (clusters identified by deduplication are the primary merge candidates).
-
-### Phase 3: Produce the backlog
-
-Combine the findings from all three analysers into a single prioritised backlog. Write it to `structural-runs/srun-NNN/BACKLOG.md` using this format:
-
-```markdown
-# Structural Backlog — SRun NNN — YYYY-MM-DD
-
-## Graph summary
-| Metric | Value |
-|--------|-------|
-| Standards loaded | N |
-| Total clauses | N |
-| Total obligations (in-scope) | N |
-| Contradictions found | N |
-| Duplication clusters | N |
-| Simplification candidates | N |
-
-## Structural health (baseline)
-| Dimension | Score |
-|-----------|-------|
-| Coherence | X.XXX |
-| Duplication index | X.XXX |
-| Traceability completeness | X.XXX |
-| Framework simplicity | 1.000 (baseline) |
-
-## Backlog (priority order)
-
-### 1. [TYPE] Short description
-- **Clauses:** ...
-- **Issue:** ...
-- **Obligations affected:** ...
-- **Recommended action:** ...
-- **Traceability:** ...
-
-[... additional items ...]
+```text
+Defined estate intake -> Strategy -> Backlog -> Queue -> Inner rewrite wave
 ```
 
-### Phase 4: STOP — Human approval gate
+For the current single-standard corpus, the normal mode sequence is:
 
-**Present the backlog to the user.** Report:
-- The graph summary
-- The structural health baseline scores
-- Each backlog item with its recommended action
-
-**Do not proceed until the human approves.** The human may:
-- Approve all items
-- Approve some and reject others
-- Modify the recommended actions
-- Reject all items and request a different analysis focus
-
-### Phase 5: Execute approved items
-
-Read `agents/structural-rewriter.md` and follow its procedure for each approved backlog item, in priority order.
-
-### Phase 6: Rebuild graph and score
-
-After all items are executed:
-1. Re-run `agents/graph-builder.md` to rebuild the graph from the modified standards.
-2. Compute the four structural health scores from the new graph.
-3. Compare before and after scores.
-
-### Phase 7: Write structural summary
-
-Write `structural-runs/srun-NNN/STRUCTURAL_SUMMARY.md`:
-
-```markdown
-# Structural Summary — SRun NNN — YYYY-MM-DD
-
-## Results
-| # | Type | Action | Status | Traceability |
-|---|------|--------|--------|--------------|
-| 1 | ... | ... | executed/skipped | preserved |
-
-**Executed: X/Y items**
-
-## Structural health
-| Dimension | Before | After | Delta |
-|-----------|--------|-------|-------|
-| Coherence | X.XXX | Y.YYY | +Z.ZZZ |
-| Duplication index | X.XXX | Y.YYY | +Z.ZZZ |
-| Traceability completeness | X.XXX | Y.YYY | +Z.ZZZ |
-| Framework simplicity | X.XXX | Y.YYY | +Z.ZZZ |
-
-## Inner loop queue
-N clauses seeded for re-scoring. See `inner-loop-queue.md`.
-
-## Further opportunity assessment
-[Honest narrative about what remains:]
-- Are there more contradictions? How many?
-- Are there more duplication clusters? What topics?
-- Are there more simplification opportunities? What scale?
-- Recommendation: continue / pause / framework looks clean
-
-## Lessons learned
-- [What worked, what didn't, what to try differently]
+```text
+Strategy -> Backlog -> Queue -> Inner rewrite wave
 ```
 
-### Phase 8: Update blog
+Use full structural graph mode when there are enough standards or suspected
+cross-standard issues to justify the extra context.
 
-Append a structural run entry to `blog.md`:
+## Setup
 
-```markdown
----
+Read:
 
-## Structural Run NNN — YYYY-MM-DD
+1. `constraints-structural.md`
+2. `agents/architect.md`
+3. `policy-architecture-strategy.md`
+4. `structural-backlog.md`
+5. `rewrite-wave-queue.md`
+6. `maps/policy-map.md`
+7. `maps/obligation-register.yaml`
+8. `maps/clause-obligation-map.yaml`
+9. `maps/scenario-index.yaml`
+10. `maps/quality-ledger.tsv`
 
-[2-4 paragraph narrative: what the graph revealed, what was changed, what improved,
-what the human decided, any surprises. Include structural health scores before and after.
-Honest about what's left to do.]
+Read all standards only if the maps are stale or a strategy decision requires
+raw clause comparison. Read raw regulatory references only when obligation cards
+are insufficient.
 
-**Items:** X/Y executed | **Coherence:** X.XXX → Y.YYY | **Duplication:** X.XXX → Y.YYY
-```
+## Mode selection
 
-### Phase 9: STOP
+Choose one mode per outer-loop run:
 
-Do not start another structural run automatically. The human reviews the summary and the "further opportunity" assessment, then decides whether to:
-- Run another outer loop iteration
-- Switch to inner loop runs to re-score structurally changed clauses
-- Stop
+- If strategy is missing, stale, or a new standard has been added, run
+  **Strategy**.
+- If the user provides a bounded population of standards, run **Defined estate
+  intake** before strategy mode.
+- If the strategy is current but the backlog does not reflect it, run
+  **Backlog**.
+- If the backlog is current but the queue is empty, stale, or missing high-value
+  executable items, run **Queue**.
+- If maps are stale enough to block strategy or queue decisions, run
+  **Map refresh**.
+- If multiple standards exist and overlap/contradiction needs evidence, run
+  **Structural graph**.
+- If the human has approved a structural backlog item, run **Approved structural
+  edit**.
 
-## Directives
+Run one mode and stop. The human decides the next action.
 
-**ONE STRUCTURAL RUN, THEN STOP.** Execute the approved backlog, write the summary, then stop. The human reviews and decides what's next.
+## Defined estate intake mode
 
-**COHERENCE BEFORE DEDUPLICATION BEFORE SIMPLIFICATION.** Always analyse and resolve in this order. You cannot safely deduplicate contradictory clauses, and you cannot safely simplify without first understanding the duplication landscape.
+Use this mode when the user provides a scoped population of standards, such as:
 
-**GRAPH IS THE SOURCE OF TRUTH.** All analysis is grounded in the obligation-clause graph. Do not make structural recommendations based on text similarity alone — always trace back to obligations.
+- "all data standards"
+- "records, retention, privacy, and data governance standards"
+- "the standards owned by the CDO function"
+- "these uploaded standards only"
+- "standards mapped to UK GDPR and operational resilience"
 
-**TRACEABILITY INVARIANT IS NON-NEGOTIABLE.** Before and after every structural change, every in-scope obligation must map to at least one clause. If a change would break this, do not execute it.
+This mode does not assume enterprise-wide policy coverage. It records the scope
+boundary so later strategy and backlog decisions do not overclaim.
 
-**HUMAN APPROVAL IS MANDATORY.** The backlog is a recommendation. The human decides what gets executed.
+Update `policy-architecture-strategy.md` and, where needed, `maps/policy-map.md`
+with:
 
-**SEED, DON'T SCORE.** The outer loop identifies structural issues and fixes them. It does NOT re-score clause quality. That's the inner loop's job. After structural changes, seed the inner loop queue and let `programme.md` handle quality.
+- population name
+- included standards
+- explicitly excluded standards or domains
+- owner or policy domain, if known
+- rationale for inclusion
+- known missing standards or documents
+- confidence in the completeness of the population
 
-**FLAG, DON'T CREATE.** If the analysis reveals that an entirely new standard should exist (or an existing one should be retired), flag it in the summary. The outer loop cannot create or delete standards.
+If the population boundary is ambiguous, ask the human to define it before
+creating an authority model or consolidation strategy.
 
-**READ THE AGENT FILES.** When building the graph, analysing, or rewriting, read the relevant agent behaviour file and follow its procedure exactly. The procedures, output formats, and worked examples are there for consistency and auditability.
+## Strategy mode
+
+Read `agents/architect.md` and update `policy-architecture-strategy.md`.
+
+The strategy must answer:
+
+- which standards exist and what each is for
+- which standard is authoritative for each major topic
+- whether overlapping standards should be kept separate, consolidated, or
+  arranged as hub-and-spoke
+- which decisions require human approval before drafting
+- what strategic actions should happen next
+
+Do not produce rewrite waves until the strategy is clear enough to justify them.
+
+## Backlog mode
+
+Read `agents/architect.md` and update `structural-backlog.md`.
+
+The backlog must translate strategy into ranked work. Each item should include:
+
+- type
+- priority
+- status
+- strategy rationale
+- likely clauses
+- obligations
+- scenarios, if known
+- expected wave or structural edit
+- human decision needed, if any
+
+Use `needs_strategy_decision` where the architecture is unresolved. Do not queue
+that item for inner-loop rewriting until the decision is made.
+
+## Queue mode
+
+Read `agents/architect.md` and update `rewrite-wave-queue.md`.
+
+Queue items must come from `structural-backlog.md`. Each item should include:
+
+- source backlog item
+- objective
+- risk tier
+- likely clauses
+- obligations
+- scenarios
+- why now
+- surgical triggers
+- status
+
+The queue should contain the next 3 to 7 executable waves, ordered by strategic
+value and verification practicality.
+
+## Map refresh mode
+
+Update affected map entries only. Do not rebuild everything by default.
+
+Refresh checks:
+
+- `maps/policy-map.md` - standards, sections, and topic clusters
+- `maps/obligation-register.yaml` - obligation cards and scope notes
+- `maps/clause-obligation-map.yaml` - traceability links
+- `maps/scenario-index.yaml` - scenario-topic links
+- `maps/quality-ledger.tsv` - known risks and candidate status
+
+After refresh, stop or continue to another mode only if the human explicitly
+asked for a combined outer-loop run.
+
+## Structural graph mode
+
+Use this mode when a multi-standard estate needs evidence before strategy or
+backlog decisions.
+
+Follow this sequence:
+
+1. Read `agents/graph-builder.md` and build `structural-runs/srun-NNN/graph.yaml`.
+2. Read `agents/coherence-checker.md` and find contradictions.
+3. Read `agents/deduplication-analyser.md` and find duplicated obligations.
+4. Read `agents/simplification-proposer.md` and propose merges.
+5. Update `policy-architecture-strategy.md` with the architectural implications.
+6. Update `structural-backlog.md` with proposed decisions and work.
+7. Stop for human approval where needed.
+
+Do not execute structural edits without human approval.
+
+## Approved structural edit mode
+
+When the human approves backlog items:
+
+1. Read `constraints-structural.md`.
+2. Read `agents/structural-rewriter.md`.
+3. Execute only the approved items.
+4. Verify the traceability invariant.
+5. Update maps.
+6. Update `structural-backlog.md` item statuses.
+7. Add affected topics or clauses to `rewrite-wave-queue.md` for rewrite-wave
+   verification and polish.
+8. Write `structural-runs/srun-NNN/STRUCTURAL_SUMMARY.md`.
+9. Stop.
+
+## Example flow
+
+If two standards both contain personal-data retention rules:
+
+1. Strategy mode decides whether to keep separate, consolidate, or use
+   hub-and-spoke.
+2. Backlog mode creates an item such as `personal_data_authority_model`.
+3. Human approves the authority model if cross-standard consolidation is needed.
+4. Queue mode adds `personal_data_authority_model` and
+   `personal_data_reader_flow` to `rewrite-wave-queue.md`.
+5. The inner loop executes one queued wave at a time.
+
+## Structural constraints
+
+The outer loop must not:
+
+- create or delete entire standards without human approval
+- remove obligations
+- execute structural changes without an approved backlog item
+- modify regulatory references
+- modify existing scenario packs
+- silently change obligation strength
+- queue a rewrite wave that has no strategy or backlog rationale
+
+If a proposed change would break traceability, do not execute it. Record a human
+decision instead.
+
+## Stop rule
+
+Run one outer-loop action and stop:
+
+- one strategy update
+- one defined estate intake
+- one backlog update
+- one queue update
+- one map refresh
+- one structural graph/backlog
+- or one approved structural edit batch

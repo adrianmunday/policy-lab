@@ -1,22 +1,39 @@
-# Policy Lab v2 — Constraints
+# Policy Lab v4 - Constraints
 
-This document defines the immutable guardrails for every agent in the Policy Lab. All agent behaviour files reference this document. Violations of these constraints invalidate a pass.
+This document defines guardrails for rewrite waves and surgical-mode checks.
+Violating these constraints invalidates a wave unless the human explicitly
+approves the policy change.
 
 ## What you CAN do
 
-- **Modify clause body text** within `standards/*.md` files. This is the primary output. Rewrite obligations, add thresholds, clarify evidence requirements, strengthen control mappings, reduce ambiguity, improve structure.
-- **Add new test scenarios** to `scenario_packs/` if you identify coverage gaps. Existing scenarios are immutable — you may only add, never modify or delete.
+- Modify clause body text within `standards/*.md` files when the clause is inside
+  the current rewrite packet.
+- Modify multiple related clauses in one rewrite wave if the planner included
+  them in scope and the editor accepted the draft.
+- Improve clarity, readability, testability, operational executability,
+  consistency, evidence requirements, role ownership, triggers, and review
+  cadence.
+- Add new test scenarios to `scenario_packs/` if a genuine coverage gap is found.
+  Existing scenario files remain immutable.
+- Update affected entries in `maps/` after a kept wave.
+- Use surgical mode for high-risk clauses that need one-clause assurance.
 
 ## What you CANNOT do
 
-- **Modify `regulatory_reference/`**. These files are read-only ground truth.
-- **Remove or weaken an existing obligation**. Obligation preservation must score >= 1.0 on every kept pass.
-- **Delete or modify existing scenario pack files**. You may add new packs; you may not alter existing ones.
-- **Create new clauses or new sections** in the standard. If a regulatory obligation has no corresponding clause, flag it in the run summary — do not invent structure.
-- **Modify YAML frontmatter fields** (standard_id, owner, regulatory_sources, status) unless programme.md explicitly authorises it.
-- **Renumber or reorganise clause identifiers** (e.g. RKS-3.2 stays RKS-3.2).
-- **Change more than one clause per pass**. Each pass is atomic: one clause, one dimension.
-- **Upgrade guidance to mandatory or downgrade mandatory to guidance**. Match RFC 2119 keywords to the actual obligation strength in the source material.
+- Modify `regulatory_reference/`. These files are read-only ground truth.
+- Remove or weaken an existing obligation.
+- Delete or modify existing scenario pack files.
+- Modify clauses outside the current packet unless the editor explicitly accepts
+  the nearby edit.
+- Create new clauses, new sections, or new standards unless the human has
+  explicitly authorised that structural change.
+- Modify YAML frontmatter fields unless the human explicitly authorises it.
+- Renumber or reorganise clause identifiers unless the human explicitly
+  authorises a structural change.
+- Upgrade guidance to mandatory language or downgrade mandatory language to
+  guidance without source support.
+- Treat an out-of-scope banking or non-UK obligation as binding on the SSRO
+  standard without human confirmation.
 
 ## Obligation language
 
@@ -29,27 +46,69 @@ When the source text implies a mandatory requirement, use RFC 2119 language:
 | SHOULD / SHOULD NOT | Recommended | Best practice or guidance recommends it |
 | MAY | Optional | Permitted but not required |
 
-Never invent obligation strength. If the original clause says "should", the rewrite says "should" unless a cited regulation justifies upgrading to "must".
+Never invent obligation strength. If the original clause says "should", the
+rewrite says "should" unless a cited regulation justifies upgrading to "must".
 
-## Keep / Discard criteria
+## Rewrite-wave keep criteria
 
-A rewritten clause is **KEPT** only if ALL of the following are true:
+A wave is **kept** only if all of the following are true:
 
-1. `obligation_preservation` >= 1.0 (no obligations lost)
-2. The targeted dimension improved
-3. No other dimension degraded materially (> 0.05 drop)
-4. All parity tests pass (scenario outcomes unchanged)
+1. All in-scope obligations remain preserved or explicitly escalated for human
+   decision.
+2. Scenario decisions remain unchanged unless the human approved a policy
+   change.
+3. No RFC 2119 strength changes are unsupported.
+4. Clause IDs and frontmatter are preserved unless authorised.
+5. The editor accepted the draft or accepted the narrowed subset that was
+   applied.
+6. The verifier records residual risks clearly.
 
-If ANY criterion fails, the rewrite is **DISCARDED** and the original clause is restored.
+If any criterion fails, the verifier marks the wave **escalate** or **reject**.
 
-## Scoring weights
+## Surgical-mode criteria
 
-| Dimension | Weight | What it measures |
-|-----------|--------|------------------|
-| Obligation Preservation | 0.30 | Are all original obligations retained? |
-| Ambiguity Reduction | 0.25 | Have vague terms and undefined thresholds been reduced? |
-| Readability Improvement | 0.15 | Is the text clearer, shorter sentences, lower grade level? |
-| Testability | 0.15 | Can the clause be linked to explicit test cases? |
-| Operational Executability | 0.15 | Can the clause be traced to controls, roles, systems? |
+Use surgical mode when a high-risk fragment needs the old assurance style.
+Triggers include:
 
-**Composite score** = weighted sum of all five dimensions.
+- retention period changes
+- statutory scope changes
+- MUST/SHALL/SHOULD/MAY strength changes
+- uncertain obligation preservation
+- scenario parity failures
+- legal interpretation not resolved by the packet
+
+In surgical mode, evaluate the affected clause or clause pair using the legacy
+scorer and parity files. Do not expand surgical mode to the whole wave unless the
+whole wave is high risk.
+
+## Compact quality rubric
+
+The verifier assesses changed regions using:
+
+| Dimension | What it measures |
+|-----------|------------------|
+| Obligation preservation | All original obligations retained |
+| Scenario parity | Same policy decisions for relevant scenarios |
+| Clarity | Easier to understand and apply |
+| Testability | Clear triggers, thresholds, evidence, and expected outcomes |
+| Operational executability | Named roles, systems, workflow steps, and cadence |
+| Readability | Simpler prose without loss of meaning |
+| Consistency | Fits nearby clauses and avoids contradictions |
+
+Use `improved`, `unchanged`, `mixed`, or `degraded` unless surgical mode requires
+numeric scoring.
+
+## Legacy scoring weights
+
+When surgical mode requires numeric scoring, use the existing weights:
+
+| Dimension | Weight |
+|-----------|--------|
+| Obligation Preservation | 0.30 |
+| Ambiguity Reduction | 0.25 |
+| Readability Improvement | 0.15 |
+| Testability | 0.15 |
+| Operational Executability | 0.15 |
+
+The legacy composite score is a surgical-mode diagnostic, not the default wave
+selection mechanism.

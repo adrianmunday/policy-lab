@@ -1,272 +1,275 @@
-# Policy Intelligence Lab v2 — Programme
+# Policy Intelligence Lab v4 - Rewrite Wave Programme
 
-This is an agentic framework for autonomously improving policy documents. Instead of a deterministic Python evaluation engine, each assessment dimension is handled by a specialist agent behaviour defined in markdown. You — Claude — are the orchestrator.
+This is the default operating programme for improving policy documents with an
+agentic harness such as Claude Code. It replaces the v2/v3 micro-pass loop as the
+normal path.
 
-## How this works
+The old loop optimised for maximum assurance on one clause and one dimension at
+a time. That is still useful for high-risk text, but it is too token-expensive as
+the main way to improve a policy. v4 uses **rewrite waves**: one coherent policy
+capability, several related clauses, all quality objectives, one compact evidence
+packet, one authoring pass, one editorial review, and one verification pass.
 
-You read this file first. It tells you the overall flow. When you need to score, rewrite, test parity, or assess coverage, you read the relevant agent behaviour file from `agents/` and follow its instructions. The agent files contain the rubrics, worked examples, and output formats that replace the old `evaluate.py`.
+## Core idea
 
-## Relationship to the structural loop
+Treat the unit of progress as a **policy capability**, not an isolated clause.
 
-This file orchestrates the **inner loop** — clause-level quality improvement within individual standards. The **outer loop** is orchestrated by `programme-structural.md` and handles cross-standard structural analysis (coherence, deduplication, simplification).
+Examples:
 
-The outer loop may seed this inner loop with clauses that need re-scoring after structural changes. These appear in `inner-loop-queue.md` and take priority in pass selection (see Selection logic below).
+- Retention tiers, trigger points, and expiry actions
+- Personal data retention and annual review
+- Statutory-function records and referral records
+- HR and finance retention schedules
+- Email, SharePoint, personal drives, and official record location
 
-Typically the outer loop runs first, then the inner loop runs to polish the affected clauses.
+Each wave should make visible policy progress while preserving regulatory
+obligations, decision parity, clause IDs, and auditability.
 
-## File map
+Rewrite waves should normally come from `rewrite-wave-queue.md`. That queue is
+created by the outer loop from `policy-architecture-strategy.md` and
+`structural-backlog.md`, so the inner loop is executing a strategic plan rather
+than inventing local work in isolation.
+
+## Role model
+
+The harness should use four compact roles:
+
+| Role | File | Purpose |
+|------|------|---------|
+| Planner | `agents/planner.md` | Select the next topic cluster and build a compact rewrite packet |
+| Author | `agents/author.md` | Rewrite the selected clauses as a coherent policy region |
+| Editor | `agents/editor.md` | Challenge the draft for obligation loss, scope drift, strength changes, and parity breaks |
+| Verifier | `agents/verifier.md` | Produce the audit trail, update maps, and decide whether the wave is keep, revise, or escalate |
+
+Existing files such as `agents/scorer-*.md`, `agents/parity-tester.md`, and
+`agents/coverage-assessor.md` remain available as specialist tools. Use them only
+when the verifier escalates a clause to **surgical mode**.
+
+## Persistent maps
+
+The wave programme relies on lightweight, reusable maps so each run does not
+have to rediscover the whole repo.
 
 ```
-policylab-v3/
-├── programme.md                  ← You are here. The orchestrator.
-├── constraints.md                ← Immutable guardrails. Read this before every run.
-├── standards/                    ← Policy documents you improve.
-├── regulatory_reference/         ← Ground truth obligations. Read-only.
-├── scenario_packs/               ← Test scenarios for parity testing. Add-only.
-├── agents/                       ← Agent behaviour files (replace evaluate.py):
-│   ├── scorer-obligation-preservation.md
-│   ├── scorer-ambiguity.md
-│   ├── scorer-readability.md
-│   ├── scorer-testability.md
-│   ├── scorer-operational-executability.md
-│   ├── parity-tester.md
-│   ├── coverage-assessor.md
-│   └── rewriter.md
-├── runs/                         ← One subfolder per run (audit trail)
-│   └── run-NNN/
-│       ├── PLAN.md
-│       ├── RUN_SUMMARY.md
-│       └── results.tsv
-├── blog.md                       ← Chronological progress narrative
-├── programme-structural.md       ← Outer loop orchestrator (structural runs)
-├── constraints-structural.md     ← Outer loop guardrails
-├── structural-runs/              ← One subfolder per structural run
-│   └── srun-NNN/
-│       ├── graph.yaml
-│       ├── BACKLOG.md
-│       ├── STRUCTURAL_SUMMARY.md
-│       └── results.tsv
-├── inner-loop-queue.md           ← Clauses seeded by outer loop for re-scoring
+maps/
+  policy-map.md                 Human-readable map of standards, sections, and clause purposes
+  obligation-register.yaml      Normalised obligation cards and scope notes
+  clause-obligation-map.yaml    Clause-to-obligation traceability map
+  scenario-index.yaml           Scenario-to-clause and scenario-to-topic map
+  quality-ledger.tsv            Latest known quality/risk state per clause or topic
 ```
 
-## Setup (first time only)
+If a map is missing or stale, update only the affected entries needed for the
+current wave. Do not rebuild everything unless the structural loop requires it.
 
-1. **Read `constraints.md`** — understand what you can and cannot do.
-2. **Read the standard** — `standards/<standard>.md`. Understand every clause.
-3. **Read the regulatory reference** — `regulatory_reference/<standard>/`. Understand the ground truth obligations. For `.xlsx` files, use the `Read` tool or parse with a bash script to extract the data.
-4. **Read all scenario packs** — `scenario_packs/<standard>/*.yaml`. Understand the test scenarios and which clauses they cover.
-5. **Run initial coverage assessment** — follow `agents/coverage-assessor.md` to map obligations to clauses and compute the baseline coverage score.
-6. **Initialise run tracking** — create `runs/run-001/` and `blog.md` if they don't exist.
-7. **Confirm with the user** — report the baseline coverage score and any notable findings. Await go-ahead.
+## Risk tiers
 
-## Key concepts
+Each wave receives a risk tier from the planner.
 
-### Pass (atomic unit of work)
-One clause + one dimension + one improvement attempt. The smallest reviewable unit.
+| Tier | Typical change | Required assurance |
+|------|----------------|--------------------|
+| Low | Readability, duplication removal, formatting, clearer labels | Editor review plus verifier checklist |
+| Medium | Operational roles, evidence, systems, cadence, workflow detail | Editor review, scenario parity, obligation spot-check |
+| High | Retention period, legal scope, obligation strength, statutory interpretation | Surgical mode for affected clauses before keep |
 
-### Run (batch of 5 passes)
-Five passes executed in sequence, then stop. The user reviews before the next run.
+Surgical mode means using the legacy one-clause scorers and parity tester for the
+specific high-risk clause, not for the whole wave.
 
-### Plan
-Which 5 (clause, dimension) pairs to target in this run. Generated autonomously based on coverage gaps and weakest scores.
+## Run directory
 
-## The plan
+Each wave is logged under:
 
-At the start of each run, select 5 (clause, dimension) pairs. Log the plan to `runs/run-NNN/PLAN.md`.
-
-### Selection logic (priority order)
-
-1. **Structural queue** — if `inner-loop-queue.md` exists and contains unprocessed clauses, these take priority. Each queued clause gets one pass targeting its weakest dimension. Mark clauses as processed in the queue file after scoring.
-2. **Coverage gaps** — clauses nearest to unaddressed or partially addressed in-scope regulatory obligations. Pair with whichever dimension is weakest for that clause.
-3. **Weakest scores** — clauses with the lowest composite score, paired with their weakest dimension.
-4. **Lessons from previous runs** — avoid repeating failed (clause, dimension) combinations from prior runs unless the approach is materially different. Check `runs/run-*/results.tsv` for discard history.
-
-### Plan format
-
-```markdown
-# Run Plan — Run NNN — YYYY-MM-DD
-
-## Coverage baseline
-coverage_score: 0.XXX
-in_scope_gaps: N (X not_addressed, Y partially_addressed)
-
-## Planned passes
-
-| Pass | Clause  | Dimension              | Rationale |
-|------|---------|------------------------|-----------|
-| 1    | RKS-X.X | [dimension]            | [why]     |
-| 2    | RKS-X.X | [dimension]            | [why]     |
-| 3    | RKS-X.X | [dimension]            | [why]     |
-| 4    | RKS-X.X | [dimension]            | [why]     |
-| 5    | RKS-X.X | [dimension]            | [why]     |
-
-## Flagged (no matching clause — human decision needed)
-- [citation]: [description] — recommend creating clause RKS-X.X
+```
+runs/wave-NNN/
+  PACKET.md          Planner output
+  DRAFT.md           Author output
+  EDITOR_REVIEW.md   Editor output
+  VERIFY.md          Verifier output
+  RUN_SUMMARY.md     Human-readable summary
+  results.tsv        Compact machine-readable log
 ```
 
-## The pass (atomic workflow)
+Use the next available `wave-NNN` number. If no `runs/` directory exists, create
+`runs/wave-001/`.
 
-Each pass follows this exact sequence:
+## Wave workflow
 
-### Step 1: Score baseline
+### 1. Load the minimum context
 
-Read the agent behaviour files for ALL FIVE scorers. Score the current clause text across all five dimensions. For comparative scorers (ambiguity, readability), use 0.5 as the baseline since there's no "before" version yet.
+Read:
 
-Record all five scores plus the composite (weighted sum — see `constraints.md` for weights).
+1. `constraints.md`
+2. this programme
+3. `agents/planner.md`
+4. the relevant map files in `maps/`
 
-### Step 2: Draft improvement
+Do not read every agent file by default. Do not load the full regulatory
+workbook unless the selected topic requires raw obligation detail.
 
-Read `agents/rewriter.md`. Provide it with:
-- The clause ID and current text
-- The target dimension
-- The baseline scores
-- The rationale from the plan
+### 2. Select a topic cluster
 
-The rewriter produces a proposed rewrite with a change log and obligation preservation checklist.
+The planner selects one coherent policy capability using this priority order:
 
-### Step 3: Score the rewrite
+1. Items in `rewrite-wave-queue.md`, if present
+2. Topics with in-scope obligation gaps or partial coverage
+3. Topics touched by several scenarios
+4. Topics with repeated operational weaknesses in `quality-ledger.tsv`
+5. High-value readability or duplication improvements
 
-Run ALL FIVE scorers on the rewritten clause, comparing against the original:
+The planner writes `PACKET.md`. The packet is the only context the author should
+need for the first draft.
 
-1. **Obligation preservation** (`agents/scorer-obligation-preservation.md`): Compare old vs new → score must be >= 1.0
-2. **Ambiguity** (`agents/scorer-ambiguity.md`): Count issues in old and new → compute reduction score
-3. **Readability** (`agents/scorer-readability.md`): Compute FK grade and Flesch ease for old and new → compute improvement score
-4. **Testability** (`agents/scorer-testability.md`): Score new clause on 6 checks → score as fraction
-5. **Operational executability** (`agents/scorer-operational-executability.md`): Score new clause on 5 checks → score as fraction
+If `rewrite-wave-queue.md` is missing or empty, the planner may select a topic
+from maps and quality signals, but it must note that the outer loop should run
+strategy/backlog/queue mode before the next wave.
 
-Compute the new composite score (weighted sum).
+### 3. Build a compact rewrite packet
 
-### Step 4: Run parity tests
+`PACKET.md` must include:
 
-Read `agents/parity-tester.md`. Find all scenario packs relevant to this clause. Run each scenario against both old and new clause text. All scenarios must produce the same outcome.
+- topic and objective
+- risk tier
+- clauses in scope, with current text
+- clauses out of scope but nearby
+- obligation cards relevant to the wave
+- scenario cards relevant to the wave
+- known weaknesses and target outcomes
+- hard constraints
+- acceptance checks
 
-### Step 5: Keep or discard
+Keep the packet compact. Prefer obligation cards over pasting full regulatory
+sources. Prefer scenario summaries over full packs unless the exact wording is
+needed.
 
-Apply the keep/discard criteria from `constraints.md`:
+### 4. Author the draft
 
-**KEEP** if ALL of the following:
-- obligation_preservation >= 1.0
-- The targeted dimension improved
-- No other dimension degraded materially (> 0.05 drop)
-- All parity tests pass
+The author reads `agents/author.md` and `PACKET.md`, then produces `DRAFT.md`.
 
-**DISCARD** if ANY criterion fails.
+The author should rewrite all in-scope clauses as one coherent policy region.
+The draft may touch multiple clauses, but it must not:
 
-If KEPT:
-- Apply the rewrite to the standard file
-- Record in results.tsv as "keep"
+- change clause IDs
+- change YAML frontmatter
+- modify regulatory references
+- modify existing scenario packs
+- invent new mandatory obligations
+- weaken or remove obligations
 
-If DISCARDED:
-- Do not modify the standard file
-- Record in results.tsv as "discard"
-- Note what went wrong for future planning
+### 5. Edit the draft
 
-### Step 6: Log
+The editor reads `agents/editor.md`, `PACKET.md`, `DRAFT.md`, and the current
+standard text for the affected clauses. The editor writes `EDITOR_REVIEW.md`
+with one of:
 
-Append the result to `runs/run-NNN/results.tsv`.
+- **accept** - safe to verify
+- **revise** - author gets one focused revision pass
+- **escalate** - affected clause requires surgical mode or human decision
+- **reject** - do not apply
+
+The editor must be strict about obligation strength, retention periods, scope,
+and decision parity. The editor should be pragmatic about style.
+
+### 6. Apply or revise
+
+If the editor says **revise**, the author gets one revision pass. Avoid open-ended
+back-and-forth. If the revision still has material risk, escalate the affected
+clause to surgical mode or human review.
+
+Only apply text to `standards/*.md` after the editor has accepted the draft or
+accepted a narrowed subset of it.
+
+### 7. Verify the wave
+
+The verifier reads `agents/verifier.md`, the applied diff, `PACKET.md`, and
+`EDITOR_REVIEW.md`. It writes `VERIFY.md`, `RUN_SUMMARY.md`, and `results.tsv`.
+
+Verification checks:
+
+- obligations preserved or explicitly escalated
+- no unsupported RFC 2119 strength changes
+- scenarios produce the same decisions unless a human approved a policy change
+- clause IDs and frontmatter preserved
+- maps updated for changed clauses
+- residual risks are explicit
+
+### 8. Update shared records
+
+After a kept wave:
+
+- update the affected entries in `maps/`
+- append a short entry to `blog.md`
+- stop
+
+Do not start another wave automatically.
+
+## Keep, revise, escalate, reject
+
+| Status | Meaning |
+|--------|---------|
+| keep | Apply and log the wave |
+| revise | One focused author revision is allowed |
+| escalate | Use surgical mode or ask the human |
+| reject | Do not apply the draft |
+
+## Surgical mode
+
+Use surgical mode only when the change risk justifies the extra tokens. Triggers:
+
+- retention period changes
+- statutory scope changes
+- MUST/SHALL/SHOULD strength changes
+- partial or uncertain obligation preservation
+- scenario decision mismatch
+- editor cannot resolve a legal interpretation from the packet
+
+In surgical mode, use the existing specialist files:
+
+- `agents/scorer-obligation-preservation.md`
+- `agents/scorer-ambiguity.md`
+- `agents/scorer-readability.md`
+- `agents/scorer-testability.md`
+- `agents/scorer-operational-executability.md`
+- `agents/parity-tester.md`
+- `agents/coverage-assessor.md`
+
+Apply them only to the affected clause or clause pair.
 
 ## Results log format
 
-Tab-separated values (TSV). Header row:
+`results.tsv` uses this header:
 
 ```
-clause_id	target_dimension	baseline_composite	new_composite	obligation_preserved	parity_pass	status	description
+topic	risk_tier	clauses_changed	status	scenarios_checked	obligation_issues	editor_decision	notes
 ```
 
-Example rows:
+Example:
 
 ```
-RKS-5.4	operational_executability	0.625	0.777	true	true	keep	added Head of Finance role and quarterly reconciliation
-RKS-2.3	testability	0.500	0.503	true	true	discard	readability degraded from 0.5 to 0.165
-—	—	0.185	—	—	—	coverage	end-of-run coverage assessment
+personal_data_retention	medium	RKS-5.8	keep	SC-012	none	accept	added DPO annual review and lawful-basis evidence without changing storage-limitation duty
 ```
 
-## The run (batch of 5 passes)
+## Output discipline
 
-Execute in this order:
+The programme is designed to reduce token waste:
 
-1. **Generate plan** — select 5 passes, log to `runs/run-NNN/PLAN.md`
-2. **Execute passes 1-5** — follow the atomic pass workflow for each
-3. **Re-assess coverage** — follow `agents/coverage-assessor.md` to compute updated coverage
-4. **Write run summary** to `runs/run-NNN/RUN_SUMMARY.md`
-5. **Update blog.md** — append a 2-4 paragraph narrative entry
-6. **STOP** — do not start another run automatically
+- read maps before raw sources
+- build one packet per wave
+- do not re-score five dimensions for every clause by default
+- do not paste full agent rubrics into run artifacts
+- do not repeat unchanged standard text in every artifact
+- escalate only the risky fragments
 
-### Run summary format
+The goal is faster, larger policy improvements with enough evidence for a human
+to trust what changed.
 
-```markdown
-# Run Summary — Run NNN — YYYY-MM-DD
+## Planning artifacts
 
-## Results
+The inner loop should treat these top-level files as planning inputs:
 
-| Pass | Clause  | Dimension | Baseline | After | Status | Notes |
-|------|---------|-----------|----------|-------|--------|-------|
-| 1    | RKS-X.X | ...       | 0.XXX    | 0.XXX | keep   | ...   |
-| ...  | ...     | ...       | ...      | ...   | ...    | ...   |
+- `policy-architecture-strategy.md` - why the queued work matters
+- `structural-backlog.md` - the backlog item behind the queued wave
+- `rewrite-wave-queue.md` - the executable queue
 
-**Kept: X/5 passes**
-
-## Coverage
-- Before: X.XXX → After: Y.YYY
-- Fully addressed: A → B
-- Partially addressed: C → D
-- Not addressed: E → F
-
-## Flagged issues
-- [any obligations needing new clauses]
-- [any systematic problems observed]
-
-## Lessons learned
-- [what worked, what didn't, what to try differently next run]
-
-## Recommended next-run targets
-1. [clause + dimension + rationale]
-2. [clause + dimension + rationale]
-3. [clause + dimension + rationale]
-4. [clause + dimension + rationale]
-5. [clause + dimension + rationale]
-```
-
-### Blog entry format
-
-Append to `blog.md`:
-
-```markdown
----
-
-## Run NNN — YYYY-MM-DD
-
-[2-4 paragraph narrative: what was the plan, what happened, what improved,
-what was discarded, any surprises or flags. Include the coverage score
-before and after. Keep it honest — if nothing improved, say so.]
-
-**Passes:** X/5 kept | **Coverage:** X.XXX → Y.YYY
-```
-
-## Directives
-
-**ONE RUN, THEN STOP.** Execute 5 passes, write the summary, then stop. The human reviews and kicks off the next run.
-
-**ONE DIMENSION PER PASS.** Each pass targets exactly one dimension on exactly one clause. No multi-targeting.
-
-**SIMPLICITY.** Prefer clear, simple clause language over complex legalese. Adding ugly complexity for a marginal score gain is not worth it.
-
-**FLAG, DON'T INVENT.** If a regulatory obligation has no corresponding clause, flag it in the run summary. Do not create new clauses or sections.
-
-**SCORE BEFORE REWRITE.** Always establish a baseline before attempting improvement.
-
-**READ THE AGENT FILES.** When scoring, rewriting, or testing, read the relevant agent behaviour file and follow its procedure exactly. The rubrics and output formats are there for consistency and auditability.
-
-**LEARN FROM HISTORY.** Before planning, read previous run results to avoid repeating failed approaches. If a (clause, dimension) pair was discarded, understand why before retrying it.
-
-## Improvement guidance (for the rewriter)
-
-When rewriting clauses, aim for these qualities in priority order:
-
-1. **Preserve all obligations** — never lose a mandatory requirement
-2. **Use RFC 2119 language** — MUST, SHALL, SHOULD, MAY matched to actual obligation strength
-3. **Quantify thresholds** — replace vague terms with specific values where justified
-4. **Clarify evidence requirements** — make compliance provable
-5. **Map to controls** — link clauses to roles, systems, and processes
-6. **Improve structure** — bullets for multiple requirements, shorter sentences
-7. **Keep it simple** — fewer words for the same meaning is always better
+The planner normally reads only the queue plus relevant maps. It should consult
+the strategy and backlog when a queued item is ambiguous or when the queue is
+missing the rationale needed to build a safe packet.

@@ -62,28 +62,38 @@ For each approved backlog item, follow the procedure matching its type:
 5. **Apply the edit:**
    - Write the merged clause in place of the primary source clause.
    - Remove the absorbed clause(s) from the standard. Where a clause is removed, leave a comment: `<!-- Clause [ID] merged into [target ID] — SRun NNN -->`.
-6. **Update scenario packs if needed:**
-   - If any scenario pack references an absorbed clause ID, update the `clause_id` field to point to the merged clause.
-   - Add these updated packs to the commit.
+6. **Update scenario references without modifying existing packs:**
+   - Existing scenario pack files are immutable.
+   - If any scenario pack references an absorbed clause ID, update `maps/scenario-index.yaml` with the new authoritative clause and note the old reference.
+   - If a new scenario is needed, add a new scenario pack file rather than editing an existing one.
 7. **Log each change.**
 
-## Seeding the inner loop queue
+## Seeding the rewrite-wave queue
 
-After all backlog items are executed, create or update `inner-loop-queue.md` in the project root:
+After all backlog items are executed, update `structural-backlog.md` and create
+or update `rewrite-wave-queue.md` in the project root with changed topic clusters
+that need rewrite-wave verification and polish:
 
 ```markdown
-# Inner Loop Queue — Seeded by SRun NNN
+# Rewrite Wave Queue
 
-Clauses modified by structural changes that need re-scoring on all five quality dimensions.
+Last updated: YYYY-MM-DD
 
-| Clause | Standard | Change type | SRun item | Notes |
-|--------|----------|-------------|-----------|-------|
-| RKS-5.8 | RKS | contradiction_resolved | #1 | Retention language aligned to DPS-3.2 |
-| DPS-3.2 | DPS | deduplicated | #2 | Replaced body with cross-reference to RKS-5.8 |
-| RKS-5.3 | RKS | merged | #3 | Absorbed content from RKS-5.4 |
+## 1. [topic_id] [short title]
+
+- **Source backlog item:** `structural-backlog.md` item X
+- **Objective:** Verify and polish clauses affected by SRun NNN item #X.
+- **Risk tier:** low | medium | high
+- **Likely clauses:** RKS-5.8, DPS-3.2
+- **Obligations:** OBL-001, OBL-003
+- **Scenarios:** SC-012
+- **Why now:** Structural edit changed authoritative wording or cross-references.
+- **Surgical triggers:** Any uncertain obligation preservation or scenario parity.
+- **Status:** queued
 ```
 
-The inner loop's planner (`programme.md`) reads this file and includes queued clauses in its next run plan.
+The v4 planner (`agents/planner.md`) reads this file and turns each queued topic
+into a rewrite packet.
 
 ## Results log format
 
@@ -110,8 +120,8 @@ After executing all items, print a summary:
 | 2 | DUPLICATION | Cross-referenced to RKS-5.8 | DPS-3.2 | Preserved |
 | 3 | SIMPLIFICATION | Merged into RKS-1.3 | RKS-1.4 (removed) | Preserved |
 
-### Inner loop queue seeded
-3 clauses queued for re-scoring in next inner loop run.
+### Rewrite-wave queue seeded
+3 clauses queued for packeted verification and polish in the v4 inner loop.
 
 ### Skipped items (not approved by human)
 | # | Type | Reason |
@@ -124,5 +134,5 @@ After executing all items, print a summary:
 - **Always verify the traceability invariant before applying any edit.** If you cannot confirm that all obligations are preserved, do not apply the change. Report the issue and move to the next backlog item.
 - **One item at a time.** Execute backlog items in order. Complete one before starting the next. This makes it possible to roll back individual changes.
 - **Leave HTML comments** where clauses are removed. These are invisible to readers but help auditors trace what happened.
-- **Update scenario packs** when clause IDs change. This is the structural rewriter's responsibility, not the simplification proposer's.
-- **The structural rewriter does NOT re-score clauses.** That's the inner loop's job. The structural rewriter only ensures obligation preservation through the traceability invariant.
+- **Do not modify existing scenario packs.** Update `maps/scenario-index.yaml` when clause references change, and add new scenario files only when needed.
+- **The structural rewriter does NOT run rewrite-wave verification.** That's the inner loop's job. The structural rewriter only ensures obligation preservation through the traceability invariant and queues affected topics.

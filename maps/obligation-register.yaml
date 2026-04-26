@@ -1,0 +1,98 @@
+version: 1
+last_initialised: "2026-04-25"
+scope_note: >
+  The current standard is SSRO-specific. The regulatory workbook contains UK,
+  Singapore, and Hong Kong banking record-keeping obligations. Banking-specific
+  and non-UK obligations should be flagged as out of scope unless the human
+  explicitly broadens the policy architecture.
+
+obligations:
+  - id: OBL-UKGDPR-STORAGE-LIMITATION
+    source: "UK GDPR / Data Protection Act 2018"
+    status: in_scope
+    topic: personal_data_retention
+    requirement: >
+      Personal data must not be kept in identifiable form longer than necessary
+      for the purpose for which it was processed, unless a lawful basis supports
+      continued retention.
+    primary_clauses:
+      - RKS-5.8
+    notes: "Annual DPO review is policy control language, not a fixed statutory period."
+
+  - id: OBL-DRA-QDC-QSC-REGISTER
+    source: "Defence Reform Act 2014, section 36(1)"
+    status: in_scope
+    topic: statutory_function_records
+    requirement: >
+      SSRO must keep an up-to-date record of qualifying defence contracts and
+      qualifying sub-contracts, including contract duration.
+    primary_clauses:
+      - RKS-5.1
+    notes: "High risk if changing register retention or live-record language."
+
+  - id: OBL-SSCR-CONTRACTOR-RECORDS
+    source: "Single Source Contract Regulations 2014, Regulation 20"
+    status: in_scope
+    topic: statutory_function_records
+    requirement: >
+      Contractor record-retention duties inform the minimum period for SSRO
+      retention of related reports and records.
+    primary_clauses:
+      - RKS-5.2
+    notes: "Retention formula should not be simplified without surgical review."
+
+  - id: OBL-PUBLIC-RECORDS-TRANSFER
+    source: "Public Records Act 1958"
+    status: in_scope
+    topic: retention_tiers_and_triggers
+    requirement: >
+      Records no longer required by SSRO but selected for permanent preservation
+      may need transfer to The National Archives.
+    primary_clauses:
+      - RKS-3.2
+      - RKS-3.5
+      - RKS-A.3
+    notes: "Preservation and transfer language should remain distinct from ordinary deletion."
+
+  - id: OBL-FOIA-HOLD
+    source: "Freedom of Information Act 2000"
+    status: in_scope
+    topic: retention_tiers_and_triggers
+    requirement: >
+      Records subject to a live FOI request or complaint process should not be
+      destroyed until the process is complete.
+    primary_clauses:
+      - RKS-3.5
+    notes: "Treated as an override to normal expiry decisions."
+
+  - id: OBL-HMRC-FINANCE-RECORDS
+    source: "Tax and VAT record-keeping requirements / HMRC guidance"
+    status: policy_scope
+    topic: hr_and_finance_records
+    requirement: >
+      Financial accounting, transaction, and asset records should be retained
+      for the applicable tax/VAT retention period used by the policy.
+    primary_clauses:
+      - RKS-5.4
+      - RKS-A.8
+    notes: "Policy currently uses current financial year plus six prior financial years."
+
+  - id: OBL-CIPD-HR-GUIDANCE
+    source: "CIPD retention guidance"
+    status: policy_scope
+    topic: hr_and_finance_records
+    requirement: >
+      HR retention periods should reflect practical employment, payroll,
+      pension, and post-employment obligations.
+    primary_clauses:
+      - RKS-5.3
+      - RKS-A.7
+    notes: "Guidance strength should generally remain SHOULD or descriptive."
+
+out_of_scope_patterns:
+  - id: OOS-SINGAPORE-MAS
+    reason: "Singapore banking obligations are outside the current UK SSRO standard."
+  - id: OOS-HONG-KONG-HKMA
+    reason: "Hong Kong banking obligations are outside the current UK SSRO standard."
+  - id: OOS-FCA-BANKING-SPECIFIC
+    reason: "FCA/PRA banking or client money rules are outside SSRO public-body scope unless a future standard targets banks."

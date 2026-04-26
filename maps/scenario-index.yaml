@@ -1,0 +1,103 @@
+version: 1
+last_initialised: "2026-04-25"
+
+scenarios:
+  SC-001:
+    file: scenario_packs/record-keeping/pack_01_retention_periods.yaml
+    clause_id: RKS-3.3
+    topics:
+      - retention_tiers_and_triggers
+      - official_record_location
+    expected_decision: "Delete routine unsaved administrative email after short retention period."
+
+  SC-002:
+    file: scenario_packs/record-keeping/pack_01_retention_periods.yaml
+    clause_id: RKS-3.3
+    topics:
+      - retention_tiers_and_triggers
+    expected_decision: "Retain operational contract record within medium retention period."
+
+  SC-003:
+    file: scenario_packs/record-keeping/pack_01_retention_periods.yaml
+    clause_id: RKS-3.5
+    topics:
+      - retention_tiers_and_triggers
+    expected_decision: "Retain while live FOI complaint procedure is not exhausted."
+
+  SC-004:
+    file: scenario_packs/record-keeping/pack_02_statutory_functions.yaml
+    clause_id: RKS-5.1
+    topics:
+      - statutory_function_records
+    expected_decision: "Retain standard report while qualifying contract remains active."
+
+  SC-005:
+    file: scenario_packs/record-keeping/pack_02_statutory_functions.yaml
+    clause_id: RKS-5.1
+    topics:
+      - statutory_function_records
+    expected_decision: "Retain referral evidence within one-year retention window."
+
+  SC-006:
+    file: scenario_packs/record-keeping/pack_02_statutory_functions.yaml
+    clause_id: RKS-A.3
+    topics:
+      - statutory_function_records
+    expected_decision: "Retain formal referral decision permanently."
+
+  SC-007:
+    file: scenario_packs/record-keeping/pack_03_hr_and_finance.yaml
+    clause_id: RKS-A.7
+    topics:
+      - hr_and_finance_records
+    expected_decision: "Retain personnel file five years after leaving."
+
+  SC-008:
+    file: scenario_packs/record-keeping/pack_03_hr_and_finance.yaml
+    clause_id: RKS-A.7
+    topics:
+      - hr_and_finance_records
+      - personal_data_retention
+    expected_decision: "Delete sensitive personal data seven months after departure."
+
+  SC-009:
+    file: scenario_packs/record-keeping/pack_03_hr_and_finance.yaml
+    clause_id: RKS-A.7
+    topics:
+      - hr_and_finance_records
+    expected_decision: "Retain pension records until the employee reaches age 100."
+
+  SC-010:
+    file: scenario_packs/record-keeping/pack_03_hr_and_finance.yaml
+    clause_id: RKS-A.8
+    topics:
+      - hr_and_finance_records
+    expected_decision: "Delete financial transaction records after seven-year retention has elapsed."
+
+  SC-011:
+    file: scenario_packs/record-keeping/pack_04_scope_and_personal_data.yaml
+    clause_id: RKS-4.2
+    topics:
+      - official_record_location
+    expected_decision: "Create a PDF or similar copy when Rights Management prevents SharePoint save."
+
+  SC-012:
+    file: scenario_packs/record-keeping/pack_04_scope_and_personal_data.yaml
+    clause_id: RKS-5.8
+    topics:
+      - personal_data_retention
+    expected_decision: "Delete personal data when original purpose is fulfilled and no lawful basis remains."
+
+  SC-013:
+    file: scenario_packs/record-keeping/pack_04_scope_and_personal_data.yaml
+    clause_id: RKS-2.1
+    topics:
+      - draft_and_evidence_records
+    expected_decision: "Retain draft if it contains evidence of decision-making."
+
+  SC-014:
+    file: scenario_packs/record-keeping/pack_04_scope_and_personal_data.yaml
+    clause_id: RKS-4.3
+    topics:
+      - official_record_location
+    expected_decision: "Transfer business-related records from personal drive to relevant SharePoint folder."
