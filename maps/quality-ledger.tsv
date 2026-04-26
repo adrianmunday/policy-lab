@@ -1,0 +1,7 @@
+topic	risk_tier	last_reviewed	status	known_weaknesses	next_wave_candidate
+retention_tiers_and_triggers	medium	2026-04-25	seeded	Several clauses define related triggers and expiry actions; good candidate for consolidated decision-rule clarity	yes
+statutory_function_records	high	2026-04-25	seeded	Complex retention formula and statutory register language; use surgical mode if periods or obligation strength change	yes
+hr_and_finance_records	medium	2026-04-25	seeded	Tables and narrative overlap; opportunity to improve role/evidence/cadence consistency	yes
+official_record_location	medium	2026-04-25	seeded	Email, SharePoint, personal drives, and default email retention interact across clauses	yes
+personal_data_retention	high	2026-04-25	seeded	Storage limitation and lawful-basis language are high assurance; good candidate for packeted improvement with surgical triggers	yes
+draft_and_evidence_records	medium	2026-04-25	seeded	Draft retention depends on evidence-of-decision-making test that could be clearer	yes
